@@ -24,6 +24,7 @@ import argparse
 import os
 import re
 import sys
+from collections import Counter
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from icarus_map import Reader, read_props, load_blobs, location_of  # noqa: E402
@@ -43,10 +44,17 @@ from icarus_map import Reader, read_props, load_blobs, location_of  # noqa: E402
 # Solving columns and rows independently yields near-identical cell sizes (530.0 vs
 # 530.5 m), confirming the grid is square — a strong consistency check. The previous
 # two-point baseline (N5/B8) was too narrow and drifted ~1 cell by the southern rows.
-# These four numbers are fixed per map; widen the anchor set before changing them.
+#
+# Icarus appears to use ONE universal grid across its open worlds: Terrain_016
+# (Olympus) reuses these exact constants. Verified by the "Home of the Gods"
+# prospect — its three exotics resolve to J10/M10/N12, each landing on a canonical
+# icarus-intel node (J10 is an isolated node, an unambiguous match).
+# When adding a new map, test these constants first before recalibrating.
 # --------------------------------------------------------------------------
 MAP_CALIBRATION = {
-    "Terrain_021": {"x0": -4461.0, "y0": -4282.0, "cell_x": 530.0, "cell_y": 530.5},
+    "Terrain_016": {"x0": -4461.0, "y0": -4282.0, "cell_x": 530.0, "cell_y": 530.5}, # Olympus
+    "Terrain_019": {"x0": -4461.0, "y0": -4282.0, "cell_x": 530.0, "cell_y": 530.5}, # Prometheus
+    "Terrain_021": {"x0": -4461.0, "y0": -4282.0, "cell_x": 530.0, "cell_y": 530.5}, # Elysium
 }
 
 # Per-map deadzones: grid cells that must be purged from output. Any deposit
@@ -63,6 +71,7 @@ GRID_ROWS = 16
 DEPOSIT_LABELS = {
     "Exotic": "Exotic",
     "Exotic_Raw_Uranium": "Uranium",
+    "Exotic_Red_Raw": "Red Exotic",
 }
 
 
@@ -134,7 +143,7 @@ def main(argv=None):
     ap = argparse.ArgumentParser(
         description="List exotic/uranium deposits with in-game grid references.")
     ap.add_argument("save", help="Path to a prospect .json save file")
-    ap.add_argument("--type", choices=["exotic", "uranium", "all"], default="all",
+    ap.add_argument("--type", choices=["exotic", "uranium", "red", "all"], default="all",
                     help="Which deposits to list (default: all)")
     ap.add_argument("--csv", action="store_true", help="Output CSV instead of a table")
     args = ap.parse_args(argv)
@@ -157,7 +166,7 @@ def main(argv=None):
 
     deposits = harvest_deposits(blobs)
     if args.type != "all":
-        want = "Uranium" if args.type == "uranium" else "Exotic"
+        want = {"uranium": "Uranium", "red": "Red Exotic", "exotic": "Exotic"}[args.type]
         deposits = [d for d in deposits if d["type"] == want]
 
     deadzones = MAP_DEADZONES.get(terrain, set())
@@ -187,17 +196,17 @@ def main(argv=None):
     print(f"Deposits in {name}  ({dtkey} / {terrain})")
     print(f"Grid: 16x16 (A-P x 1-16), calibration '{terrain}'   "
           f"(* = outside grid bounds)\n")
-    print(f"  {'TYPE':8} {'GRID':5} {'WORLD (m)':24} {'REMAINING'}")
-    print(f"  {'-'*7} {'-'*5} {'-'*24} {'-'*9}")
+    print(f"  {'TYPE':10} {'GRID':5} {'WORLD (m)':24} {'REMAINING'}")
+    print(f"  {'-'*10} {'-'*5} {'-'*24} {'-'*9}")
     for typ, ref, x, y, z, rem in rows:
         world = f"({x}, {y}, {z})"
-        print(f"  {typ:8} {ref:5} {world:24} {rem}")
+        print(f"  {typ:10} {ref:5} {world:24} {rem}")
     if not rows:
         print("  (none found)")
     else:
-        n_exo = sum(1 for r in rows if r[0] == "Exotic")
-        n_ura = sum(1 for r in rows if r[0] == "Uranium")
-        print(f"\n  total: {len(rows)} deposits  ({n_exo} exotic, {n_ura} uranium)")
+        by_type = Counter(r[0] for r in rows)
+        breakdown = ", ".join(f"{n} {t.lower()}" for t, n in sorted(by_type.items()))
+        print(f"\n  total: {len(rows)} deposits  ({breakdown})")
     return 0
 
 
