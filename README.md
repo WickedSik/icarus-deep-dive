@@ -15,7 +15,7 @@ The `docs/save-format/` directory contains detailed breakdowns of the Icarus sav
 
 ## Tools
 
-Both tools are Python 3 (3.8+) with no third-party dependencies — they use only the standard library.
+All three tools are Python 3 (3.8+) with no third-party dependencies — they use only the standard library.
 
 Prospect save files are located at:
 ```
@@ -149,6 +149,58 @@ Exotic,C8,-2935,-419,98,211
 Uranium,N5,2398,-1780,90,282
 Uranium,B8,-3455,-368,30,257
 ```
+
+### `icarus_closest.py`
+
+Finds the closest ore deposits to a given grid square — answers "where's the nearest iron from my base at H10?"
+
+Every ore deposit the map tracks is a *deep mining* deposit (the kind you drill). They come in two breeds: **surface** (`BP_Deep_Mining_Ore_Deposit_C`, drillable in the open) and **cave** (`BP_Deep_Mining_Ore_Deposit_Cave_C`, buried inside a cave system). The tool labels each result and can filter by breed.
+
+**Usage:**
+```bash
+python3 tools/icarus_closest.py <path/to/Prospect.json> <ore> <grid> [options]
+```
+
+**Arguments:**
+
+| Argument | Meaning |
+|----------|---------|
+| `<ore>` | Ore type, case-insensitive (e.g. `iron`, `titanium`, `gold`). Aliases: `uranium`, `red`, `ice`. Unique substring matches also work. |
+| `<grid>` | Origin grid square (e.g. `H10`). Distances are measured from the cell centre. |
+
+**Options:**
+
+| Flag | Effect |
+|------|--------|
+| `--breed surface\|cave\|any` | Filter by deep-deposit breed (default: any) |
+| `--limit N` | How many of the nearest to list (default: 10) |
+| `--csv` | Output CSV instead of a formatted table |
+
+Distances are horizontal (XY) from the centre of the origin square, so they carry roughly half-a-cell (~265 m) uncertainty depending on where within the square you actually stand. If the ore type isn't found, the tool lists every available type with its deposit count.
+
+**Example:**
+```bash
+python3 tools/icarus_closest.py "The Garden.json" iron H10 --limit 5
+```
+
+Sample output:
+```
+Closest 'Iron' deposits to H10 in The Garden  (Terrain_021)
+Origin: centre of H10 = world (-486, 758) m   breed filter: any
+Distances are horizontal (XY) from the cell centre — ~265 m uncertainty within the square.
+
+  GRID  BREED       DIST   WORLD XY (m)           REMAINING
+  ----- -------- -------   ---------------------- ---------
+  G11   cave        868m   (-1080, 1390)          -1
+  H12   cave        907m   (-377, 1659)           -1
+  F9    cave       1251m   (-1675, 368)           -1
+  F9    surface    1380m   (-1713, 125)           -1
+  I13   cave       1380m   (-145, 2095)           -1
+
+  showing 5 nearest  (4 cave, 1 surface)
+```
+
+A `ResourceRemaining` of `-1` means the deep-ore deposit reports no finite amount (effectively unlimited); some resources such as uranium do report real figures.
 
 ## Requirements
 
