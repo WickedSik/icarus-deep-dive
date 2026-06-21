@@ -37,13 +37,24 @@ from icarus_map import Reader, read_props, load_blobs, location_of  # noqa: E402
 #   x0, y0     world position (m) of the grid's top-left corner (col A / row 1 edge)
 #   cell_x/y   cell width/height in metres
 #
-# Terrain_021 (OpenWorld_Elysium / "The Garden") values were calibrated from two
-# in-game-verified deposits — uranium at N5 and B8 — and cross-checked against the
-# biome cave distribution. Accurate mid-map; if an exact in-game cell ever
-# disagrees near the edges, adjust these four numbers (they are fixed per map).
+# Terrain_021 (OpenWorld_Elysium) values were calibrated from six in-game-verified
+# deposits in the "Eden Oasis" prospect, each cross-checked against icarus-intel.com
+# (a 1:1 copy of the in-game map): uranium at B8/F13/K14 and exotic at G8(EDEN)/G9/H11.
+# Solving columns and rows independently yields near-identical cell sizes (530.0 vs
+# 530.5 m), confirming the grid is square — a strong consistency check. The previous
+# two-point baseline (N5/B8) was too narrow and drifted ~1 cell by the southern rows.
+# These four numbers are fixed per map; widen the anchor set before changing them.
 # --------------------------------------------------------------------------
 MAP_CALIBRATION = {
-    "Terrain_021": {"x0": -4187.0, "y0": -3897.0, "cell_x": 487.75, "cell_y": 470.6},
+    "Terrain_021": {"x0": -4461.0, "y0": -4282.0, "cell_x": 530.0, "cell_y": 530.5},
+}
+
+# Per-map deadzones: grid cells that must be purged from output. Any deposit
+# computed into one of these cells is removed — it exists in the save but is not
+# a valid prospect. G8 on Terrain_021 holds an EDEN-colony exotic buried beneath
+# the settlement; it appears in the save data but never on the in-game map.
+MAP_DEADZONES = {
+    "Terrain_021": {"G8"},
 }
 
 GRID_COLS = "ABCDEFGHIJKLMNOP"   # 16 columns
@@ -149,13 +160,21 @@ def main(argv=None):
         want = "Uranium" if args.type == "uranium" else "Exotic"
         deposits = [d for d in deposits if d["type"] == want]
 
+    deadzones = MAP_DEADZONES.get(terrain, set())
     rows = []
+    purged = 0
     for d in deposits:
         ref, in_bounds = grid_ref(d["xyz"], cal)
+        if ref in deadzones:
+            purged += 1
+            continue
         x, y, z = (d["xyz"][0] / 100, d["xyz"][1] / 100, d["xyz"][2] / 100)
         rows.append((d["type"], ref + ("" if in_bounds else "*"),
                      f"{x:.0f}", f"{y:.0f}", f"{z:.0f}",
                      "" if d["remaining"] is None else str(d["remaining"])))
+    if purged:
+        print(f"  ({purged} deposit(s) purged from deadzone cells: "
+              f"{', '.join(sorted(deadzones))})", file=sys.stderr)
 
     if args.csv:
         print("type,grid,world_x_m,world_y_m,world_z_m,remaining")

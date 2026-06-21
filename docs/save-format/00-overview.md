@@ -6,6 +6,16 @@ Icarus saves player progress and world state across three hierarchical tiers of 
 
 Saves are stored in `%LocalAppData%\Icarus\Saved\PlayerData\<SteamID64>\`. The data is mostly UTF-8 JSON, with binary files for fog-of-war masks and within-JSON base64-encoded+zlib-compressed world state blobs.
 
+## Data Provenance & Confidence
+
+These files are a **cloud-synced snapshot, not a live view**. While the game is running, in-game state can run ahead of what has been flushed to disk, and a later sync may overwrite the local files. Treat any specific **values** in this documentation as a point-in-time sample that may be stale — the **structures** are stable, the **contents** are not.
+
+This documentation distinguishes what is proven from what is not:
+
+- **Proven** — file structures, field names, and byte layouts read directly from real saves.
+- **Inferred** — field *meanings* deduced from names, values, or the editor source. Reasonable, but not confirmed.
+- **Unknown / unproven** — explicitly flagged. We do not guess; if a meaning or relationship cannot be shown from the data, it is marked as such (e.g. *unproven*, *inferred*, *unknown*).
+
 ## Three Tiers of Data
 
 Icarus organizes save data in three tiers, each representing a scope of player progression:
@@ -78,7 +88,7 @@ See [Account Tier § Metadata System](01-account-tier.md#metadata-data-tables) f
 | Account | `Accolades.json` | Achievement records | Linked to ProspectID |
 | Account | `BestiaryData.json` | Creature kill/encounter records | (mostly unexplored) |
 | Account | `Mounts.json` | Tamed mount roster | ~643 KB of data |
-| Account | `flags_<SteamID>.dat` | Binary flags; see § Binary Flags | Bit array |
+| Account | `flags_<SteamID>.dat` | Binary flags (SteamID + int32 flag list) | Flag meanings *unproven* |
 | Character | `Characters.json` | All character slots; **double-encoded JSON strings** | Critical gotcha |
 | Character | `Loadout/Loadouts.json` | Equipment loadouts per character | Prospect-associated |
 | Prospect | `Prospects/<Name>.json` | World state (buildings, creatures, voxels) | ProspectBlob uses zlib + StateRecorder format |

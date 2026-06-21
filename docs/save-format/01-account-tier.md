@@ -57,10 +57,10 @@ Known `MetaRow` keys and their meanings:
 | MetaRow | Meaning |
 |---------|---------|
 | `Credits` | Currency for crafting |
-| `Exotic1` | Yellow exotics (common tier) |
-| `Exotic_Red` | Red exotics (rare tier) |
+| `Exotic1` | Standard exotics — purple |
+| `Exotic_Red` | Red exotics — red |
 | `Biomass` | Organic material for crafting |
-| `Exotic_Uranium` | Uranium isotope (high-tier resource) |
+| `Exotic_Uranium` | Exotic uranium — yellow |
 | `Refund` | Refund tokens (reset talent points) |
 
 New entries can be added dynamically if missing; the editor code (icarus_profile.dart line 62–73) auto-creates them.
@@ -211,27 +211,33 @@ Tamed mount roster. Typically ~643 KB of roster data. Each mount entry includes 
 
 ## flags_<SteamID>.dat
 
-Binary flag storage. Contains a compressed representation of unlocked features, cosmetics, and game progression flags.
+Small binary file holding account progression flags. Its precise purpose is *unproven* — we have not mapped the values to specific features.
 
-### Format
+### Format (observed)
 
-4-byte little-endian integer (length) + ASCII SteamID string + flag byte array.
+The byte layout is read directly from the file:
 
-**Example breakdown** (from a real save):
+| Bytes | Meaning |
+|-------|---------|
+| `int32` | Length prefix for the following string (includes the trailing null) |
+| ASCII | SteamID64, null-terminated |
+| `int32` | Count of flag entries that follow |
+| `int32 × count` | Flag index values |
+
+**Example breakdown** (from a real 62-byte save, `flags_76561198009434211.dat`):
 
 ```
-00 04 00 00        # Length prefix (little-endian: 4 bytes to follow)
-37 36 35 36        # ASCII "7656"
-31 31 39 38        # ASCII "1198"
-30 30 39 34        # ASCII "0094"
-33 34 32 31        # ASCII "3421"
-31 31              # ASCII "11"
-[byte flags...]    # Bit array of unlocked features
+12 00 00 00                                       # length = 18
+37 36 35 36 31 31 39 38 30 30 39 34 33 34 32 31 31 00   # "76561198009434211\0"
+09 00 00 00                                       # count = 9
+01.. 02.. 03.. 04.. 15.. 16.. 17.. 19.. 1b..      # values (int32): 1, 2, 3, 4, 21, 22, 23, 25, 27
 ```
 
-The flag byte array is indexed by bit position. For example, `UnlockedFlags: [5, 4, 1, 26, ...]` means bits 5, 4, 1, 26, etc. are set in this array.
+### Unknown / unproven
 
-**Decoding**: Read the flag bytes as a bit array. Index N corresponds to byte `N / 8`, bit `N % 8`.
+- **What the integers mean** — *unknown*. The indices are not mapped to features.
+- **Relationship to `Profile.json` `UnlockedFlags`** — *unproven*. In the single snapshot examined, the value sets differ (`flags.dat` = `[1, 2, 3, 4, 21, 22, 23, 25, 27]` vs `UnlockedFlags` = `[5, 4, 1, 26, 86, 7, 60, 20, 93]`). This may indicate two separate flag spaces, **or** simply a stale snapshot (see [Data Provenance](00-overview.md#data-provenance--confidence)); we cannot tell from the data alone.
+- **Whether the layout is always an int32 list** — based on a single sample; not generalised.
 
 ## Metadata Data Tables
 
@@ -330,7 +336,7 @@ From `/Volumes/Development/tmp/icarus-save/Saved/PlayerData/76561198009434211/Pr
 
 **Interpretation**:
 - **UserID**: Steam account 76561198009434211
-- **MetaResources**: 10 refund tokens, 41 credits, 453 yellow exotics, 57 red exotics
+- **MetaResources**: 10 refund tokens, 41 credits, 453 standard (purple) exotics, 57 red exotics
 - **UnlockedFlags**: Bits 5, 4, 1, 26, 86, etc. are set (feature flags not reverse-engineered)
 - **Talents**: 7 techs unlocked (envirosuit variants, backpack, farm seeds, chicken taming, forest exploration)
 - **NextChrSlot**: Next available slot is 4 (means slots 0–3 are full)
