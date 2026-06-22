@@ -30,9 +30,9 @@ Failure to re-encode properly will corrupt the file or lose character data.
 ```json
 {
   "Characters.json": [
-    "{\"CharacterName\":\"LUGHIR\",\"XP\":5060100,\"XP_Debt\":0,\"IsDead\":false,\"IsAbandoned\":false,...}",
-    "{\"CharacterName\":\"LYTHIA\",\"XP\":600000,\"XP_Debt\":0,\"IsDead\":false,\"IsAbandoned\":false,...}",
-    "{\"CharacterName\":\"CYNTHIA\",\"XP\":5017656,\"XP_Debt\":0,\"IsDead\":false,\"IsAbandoned\":false,...}",
+    "{\"CharacterName\":\"Player1\",\"XP\":5060100,\"XP_Debt\":0,\"IsDead\":false,\"IsAbandoned\":false,...}",
+    "{\"CharacterName\":\"Player2\",\"XP\":600000,\"XP_Debt\":0,\"IsDead\":false,\"IsAbandoned\":false,...}",
+    "{\"CharacterName\":\"Player3\",\"XP\":5017656,\"XP_Debt\":0,\"IsDead\":false,\"IsAbandoned\":false,...}",
     null
   ]
 }
@@ -87,7 +87,7 @@ Once decoded, each character object has these fields:
 
 ```json
 {
-  "CharacterName": "LUGHIR",
+  "CharacterName": "Player1",
   "XP": 5060100,
   "XP_Debt": 0,
   "IsDead": false,
@@ -163,15 +163,15 @@ Equipment loadout configurations, stored separately from character state. Each l
       ],
       "AssociatedProspect": {
         "ProspectID": "Welcome to Hell",
-        "ClaimedAccountID": "76561198009434211",
+        "ClaimedAccountID": "<STEAMID64>",
         "ClaimedAccountCharacter": 2,
         "ProspectDTKey": "OpenWorld_Prometheus",
         "ProspectState": "Active",
         "AssociatedMembers": [
           {
-            "AccountName": "LYTHIA",
-            "CharacterName": "LYTHIA",
-            "UserID": "76561198009434211",
+            "AccountName": "Player2",
+            "CharacterName": "Player2",
+            "UserID": "<STEAMID64>",
             "ChrSlot": 2,
             "Experience": 600000,
             "Status": "Prospect_Conifer",
@@ -273,7 +273,7 @@ From the raw Characters.json string (after two decodes):
 
 ```json
 {
-  "CharacterName": "LUGHIR",
+  "CharacterName": "Player1",
   "XP": 5060100,
   "XP_Debt": 0,
   "IsDead": false,
@@ -282,7 +282,7 @@ From the raw Characters.json string (after two decodes):
 ```
 
 **Interpretation**:
-- **CharacterName**: "LUGHIR" (the player's avatar name)
+- **CharacterName**: "Player1" (the player's avatar name)
 - **XP**: 5,060,100 experience points (high-level character)
 - **XP_Debt**: 0 (no death penalty active)
 - **IsDead**: false (character is alive)

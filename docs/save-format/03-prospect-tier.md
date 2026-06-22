@@ -238,7 +238,7 @@ For multiplayer prospects, the player also stores metadata about co-op sessions 
 ```json
 {
   "AssociatedProspects_Slot_0.json": [
-    "{\"AssociatedProspect\":{\"ProspectID\":\"Eden Oasis\",\"ClaimedAccountID\":\"76561198114004371\",\"ClaimedAccountCharacter\":2,\"ProspectDTKey\":\"OpenWorld_Elysium\",\"ProspectState\":\"Active\",\"AssociatedMembers\":[{\"AccountName\":\"ROW\",\"CharacterName\":\"ROW\",\"UserID\":\"76561198114004371\",\"ChrSlot\":2,\"Experience\":1400000,\"Status\":\"Prospect_Conifer\",\"Settled\":false,\"IsCurrentlyPlaying\":true},{\"AccountName\":\"LUGHIR\",\"CharacterName\":\"LUGHIR\",\"UserID\":\"76561198009434211\",\"ChrSlot\":0,\"Experience\":5060100,\"Status\":\"Prospect_Conifer\",\"Settled\":false,\"IsCurrentlyPlaying\":false}],\"Cost\":0,\"Reward\":0,\"Difficulty\":\"Medium\",\"Insurance\":false,\"NoRespawns\":false,\"ElapsedTime\":201146,\"SelectedDropPoint\":0,\"CustomSettings\":[]},\"HostedBy\":{\"LastHostType\":\"SteamP2P\",\"SteamP2PHostId\":\"76561198114004371\",\"DedicatedServerIP\":\"76561198114004371:17777\",\"CachedServerName\":\"Row\"}}"
+    "{\"AssociatedProspect\":{\"ProspectID\":\"Eden Oasis\",\"ClaimedAccountID\":\"<STEAMID64_2>\",\"ClaimedAccountCharacter\":2,\"ProspectDTKey\":\"OpenWorld_Elysium\",\"ProspectState\":\"Active\",\"AssociatedMembers\":[{\"AccountName\":\"Player4\",\"CharacterName\":\"Player4\",\"UserID\":\"<STEAMID64_2>\",\"ChrSlot\":2,\"Experience\":1400000,\"Status\":\"Prospect_Conifer\",\"Settled\":false,\"IsCurrentlyPlaying\":true},{\"AccountName\":\"Player1\",\"CharacterName\":\"Player1\",\"UserID\":\"<STEAMID64>\",\"ChrSlot\":0,\"Experience\":5060100,\"Status\":\"Prospect_Conifer\",\"Settled\":false,\"IsCurrentlyPlaying\":false}],\"Cost\":0,\"Reward\":0,\"Difficulty\":\"Medium\",\"Insurance\":false,\"NoRespawns\":false,\"ElapsedTime\":201146,\"SelectedDropPoint\":0,\"CustomSettings\":[]},\"HostedBy\":{\"LastHostType\":\"SteamP2P\",\"SteamP2PHostId\":\"<STEAMID64_2>\",\"DedicatedServerIP\":\"<STEAMID64_2>:17777\",\"CachedServerName\":\"Player4\"}}"
   ]
 }
 ```
@@ -324,7 +324,7 @@ Prospects/The Garden.json.backup_10 (oldest, then discarded)
 
 ## Worked Example: AssociatedProspects_Slot_0.json (Decoded String)
 
-From `/Volumes/Development/tmp/icarus-save/Saved/PlayerData/76561198009434211/AssociatedProspects_Slot_0.json`:
+From `%LocalAppData%\Icarus\Saved\PlayerData\<STEAMID64>\AssociatedProspects_Slot_0.json`:
 
 After decoding the outer JSON and the inner JSON string, the object looks like:
 
@@ -332,15 +332,15 @@ After decoding the outer JSON and the inner JSON string, the object looks like:
 {
   "AssociatedProspect": {
     "ProspectID": "Eden Oasis",
-    "ClaimedAccountID": "76561198114004371",
+    "ClaimedAccountID": "<STEAMID64_2>",
     "ClaimedAccountCharacter": 2,
     "ProspectDTKey": "OpenWorld_Elysium",
     "ProspectState": "Active",
     "AssociatedMembers": [
       {
-        "AccountName": "ROW",
-        "CharacterName": "ROW",
-        "UserID": "76561198114004371",
+        "AccountName": "Player4",
+        "CharacterName": "Player4",
+        "UserID": "<STEAMID64_2>",
         "ChrSlot": 2,
         "Experience": 1400000,
         "Status": "Prospect_Conifer",
@@ -348,9 +348,9 @@ After decoding the outer JSON and the inner JSON string, the object looks like:
         "IsCurrentlyPlaying": true
       },
       {
-        "AccountName": "LUGHIR",
-        "CharacterName": "LUGHIR",
-        "UserID": "76561198009434211",
+        "AccountName": "Player1",
+        "CharacterName": "Player1",
+        "UserID": "<STEAMID64>",
         "ChrSlot": 0,
         "Experience": 5060100,
         "Status": "Prospect_Conifer",
@@ -369,20 +369,20 @@ After decoding the outer JSON and the inner JSON string, the object looks like:
   },
   "HostedBy": {
     "LastHostType": "SteamP2P",
-    "SteamP2PHostId": "76561198114004371",
-    "DedicatedServerIP": "76561198114004371:17777",
-    "CachedServerName": "Row"
+    "SteamP2PHostId": "<STEAMID64_2>",
+    "DedicatedServerIP": "<STEAMID64_2>:17777",
+    "CachedServerName": "Player4"
   }
 }
 ```
 
 **Interpretation**:
 - **ProspectID**: "Eden Oasis" (named world)
-- **Owner**: Player 76561198114004371 (ROW), character slot 2
-- **Co-op Members**: ROW + LUGHIR, 2 players
-- **ROW**: Currently playing (IsCurrentlyPlaying: true), 1.4M XP earned
-- **LUGHIR**: Offline (IsCurrentlyPlaying: false), 5.06M XP earned
+- **Owner**: Player `<STEAMID64_2>` (Player4), character slot 2
+- **Co-op Members**: Player4 + Player1, 2 players
+- **Player4**: Currently playing (IsCurrentlyPlaying: true), 1.4M XP earned
+- **Player1**: Offline (IsCurrentlyPlaying: false), 5.06M XP earned
 - **ElapsedTime**: ~55 hours in this prospect (201146 seconds)
-- **Hosting**: Steam P2P, hosted by ROW (76561198114004371)
+- **Hosting**: Steam P2P, hosted by Player4 (`<STEAMID64_2>`)
 
-This indicates an active co-op session with ROW as host and LUGHIR as guest.
+This indicates an active co-op session with Player4 as host and Player1 as guest.

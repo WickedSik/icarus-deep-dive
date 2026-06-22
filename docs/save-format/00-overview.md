@@ -49,7 +49,7 @@ See [Prospect Tier](03-prospect-tier.md) for details.
 
 ## Data Format Reality
 
-The editor at `/Volumes/Development/personal/icarus_editor/` presents itself as a "pure JSON" save tool, but this is incomplete:
+The `icarus_editor` project (a separate, third-party repository — see [Acknowledgements](#acknowledgements)) presents itself as a "pure JSON" save tool, but this is incomplete:
 
 - **Handles**: Profile.json, Characters.json, MetaInventory.json (account tier + character tier data)
 - **Ignores**: Prospect/world layer (Prospects/*.json), binary fog files (MapData/*.fog), binary flag files (flags_*.dat), and any data-table metadata
@@ -100,3 +100,10 @@ See [Account Tier § Metadata System](01-account-tier.md#metadata-data-tables) f
 - [Account Tier Documentation](01-account-tier.md) — Profile, inventory, talents, metadata tables
 - [Character Tier Documentation](02-character-tier.md) — Characters.json, double-encoding trap, loadouts
 - [Prospect Tier Documentation](03-prospect-tier.md) — World saves, compression, StateRecorder format, multiplayer
+
+## Acknowledgements
+
+The `icarus_editor` project is a **separate, third-party repository** — not part of this project. It is referenced throughout this documentation as a source of insight into the account- and character-tier save files (Profile.json, Characters.json, MetaInventory.json). Its source provided valuable reference for understanding how those data files are read, written, and encoded. Credit and thanks to its author for that groundwork.
+
+- **Repository**: <https://github.com/dealloc/icarus_editor>
+- **Author**: [dealloc](https://github.com/dealloc)

@@ -22,7 +22,7 @@ The top-level account document. Contains user ID, currency pools, unlocked flags
 
 ```json
 {
-  "UserID": "76561198009434211",
+  "UserID": "<STEAMID64>",
   "MetaResources": [
     {"MetaRow": "Refund", "Count": 10},
     {"MetaRow": "Credits", "Count": 41},
@@ -224,11 +224,11 @@ The byte layout is read directly from the file:
 | `int32` | Count of flag entries that follow |
 | `int32 × count` | Flag index values |
 
-**Example breakdown** (from a real 62-byte save, `flags_76561198009434211.dat`):
+**Example breakdown** (from a real 62-byte save, `flags_<STEAMID64>.dat`):
 
 ```
-12 00 00 00                                       # length = 18
-37 36 35 36 31 31 39 38 30 30 39 34 33 34 32 31 31 00   # "76561198009434211\0"
+12 00 00 00                                       # length = 18 (17 digits + null)
+<17 ASCII bytes: SteamID64 digits>           00   # "<STEAMID64>\0"
 09 00 00 00                                       # count = 9
 01.. 02.. 03.. 04.. 15.. 16.. 17.. 19.. 1b..      # values (int32): 1, 2, 3, 4, 21, 22, 23, 25, 27
 ```
@@ -308,11 +308,11 @@ When writing a new save, backups roll forward and the oldest is deleted.
 
 ## Worked Example: Profile.json
 
-From `/Volumes/Development/tmp/icarus-save/Saved/PlayerData/76561198009434211/Profile.json`:
+From `%LocalAppData%\Icarus\Saved\PlayerData\<STEAMID64>\Profile.json`:
 
 ```json
 {
-  "UserID": "76561198009434211",
+  "UserID": "<STEAMID64>",
   "MetaResources": [
     {"MetaRow": "Refund", "Count": 10},
     {"MetaRow": "Credits", "Count": 41},
@@ -335,7 +335,7 @@ From `/Volumes/Development/tmp/icarus-save/Saved/PlayerData/76561198009434211/Pr
 ```
 
 **Interpretation**:
-- **UserID**: Steam account 76561198009434211
+- **UserID**: Steam account <STEAMID64>
 - **MetaResources**: 10 refund tokens, 41 credits, 453 standard (purple) exotics, 57 red exotics
 - **UnlockedFlags**: Bits 5, 4, 1, 26, 86, etc. are set (feature flags not reverse-engineered)
 - **Talents**: 7 techs unlocked (envirosuit variants, backpack, farm seeds, chicken taming, forest exploration)
